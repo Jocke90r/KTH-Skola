@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/HomeWorkOne/HomeWorkOne.iml" filepath="$PROJECT_DIR$/HomeWorkOne/HomeWorkOne.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Homeworktwo/Homeworktwo.iml" filepath="$PROJECT_DIR$/Homeworktwo/Homeworktwo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/KTH-skola.iml" filepath="$PROJECT_DIR$/KTH-skola.iml" />
+    </modules>
+  </component>
+</project>
