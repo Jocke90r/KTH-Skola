@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author Chosrat
+ * @author Joakim
  */
 public class HangmanServer {
 
