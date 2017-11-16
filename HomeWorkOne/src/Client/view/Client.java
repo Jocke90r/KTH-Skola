@@ -1,12 +1,12 @@
-package view;
+package Client.view;
 
 /**
  * Created by Chosrat on 2017-11-09.
  */
 
 
-import client.ClientConnection;
-import controller.Controller;
+import Client.client.ClientConnection;
+import Client.controller.Controller;
 
 /**
  * Created by Chosrat on 2017-11-04.

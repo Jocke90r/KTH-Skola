@@ -1,10 +1,10 @@
-package net;
+package Server.net;
 
 /**
  * Created by Chosrat on 2017-11-09.
  */
 
-import controller.Controller;
+import Server.controller.Controller;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author Joakim
+ * @author Chosrat
  */
 public class HangmanServer {
 

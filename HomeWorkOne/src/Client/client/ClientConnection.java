@@ -1,4 +1,4 @@
-package client;
+package Client.client;
 
 /**
  * Created by Chosrat on 2017-11-09.

@@ -1,10 +1,10 @@
-package controller;
+package Client.controller;
 
 /**
  * Created by Chosrat on 2017-11-09.
  */
 
-import client.ClientConnection;
+import Client.client.ClientConnection;
 
 public class Controller {
 

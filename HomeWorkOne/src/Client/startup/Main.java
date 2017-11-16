@@ -1,11 +1,11 @@
-package startup;
+package Client.startup;
 
 /**
  * Created by Chosrat on 2017-11-09.
  */
 
 
-import view.Client;
+import Client.view.Client;
 
 /**
  *

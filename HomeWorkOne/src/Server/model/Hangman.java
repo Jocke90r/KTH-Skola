@@ -1,10 +1,10 @@
-package model;
+package Server.model;
 
 /**
  * Created by Chosrat on 2017-11-09.
  */
 
-import net.HangmanServer;
+import Server.net.HangmanServer;
 
 import java.io.*;
 import java.net.Socket;
@@ -141,7 +141,7 @@ public class Hangman extends Thread{
         words = new ArrayList<String>();
 
         try {
-            File file = new File("/Users/Chosrat/Desktop/Nätverksprogrammering/Hangmant-test1/Server/src/Server/words.txt");
+            File file = new File("/Users/Joaki/IdeaProjects/KTH-Skola/HomeWorkOne//src/Server/model/words.txt");
             BufferedReader read = new BufferedReader(new FileReader(file));         //BufferedReader.readLine() reads a line of text
             String line;
             try {

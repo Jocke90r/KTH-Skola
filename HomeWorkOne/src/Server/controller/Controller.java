@@ -1,12 +1,12 @@
-package controller;
+package Server.controller;
 
 /**
  * Created by Chosrat on 2017-11-09.
  */
 import java.net.Socket;
 
-import model.Hangman;
-import net.HangmanServer;
+import Server.model.Hangman;
+import Server.net.HangmanServer;
 
 
 
