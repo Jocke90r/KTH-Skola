@@ -13,7 +13,7 @@ import Client.view.Client;
  */
 public class Main {
 
-    //Startup of the client
+    //Startup of the net
     public static void main(String[] args){
 
         new Client();

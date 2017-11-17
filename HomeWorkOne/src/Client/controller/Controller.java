@@ -4,7 +4,7 @@ package Client.controller;
  * Created by Chosrat on 2017-11-09.
  */
 
-import Client.client.ClientConnection;
+import Client.net.ClientConnection;
 
 public class Controller {
 
