@@ -3,6 +3,7 @@ package Client.Net;
 import Client.controller.Controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -12,6 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Created by Chosrat on 2017-11-21.
@@ -74,24 +77,30 @@ public class ServerConnect implements Runnable{
     }
 
     private void readFromServer(SelectionKey key) throws IOException{
-        ByteBuffer bufferFromServer = ByteBuffer.allocate(1000);
+        ByteBuffer bufferFromServer = ByteBuffer.allocate(256);
         SocketChannel channel = (SocketChannel) key.channel();
-        //bufferFromServer = (ByteBuffer) key.attachment();
         bufferFromServer.clear();
         channel.read(bufferFromServer);
-        bufferFromServer.flip();
-        byte[] bytes = new byte[bufferFromServer.remaining()];
-        bufferFromServer.get(bytes); //skriver till bytes
-    //    System.out.println("Clienten readFromServer");
-        String fromServer = new String(bytes, "UTF-8");
-        System.out.println(fromServer);
-        key.interestOps(SelectionKey.OP_WRITE);
+        Executor pool = ForkJoinPool.commonPool();
+        pool.execute(()->{
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+            try {
+                bufferFromServer.flip();
+                byte[] bytes = new byte[bufferFromServer.remaining()];
+                bufferFromServer.get(bytes); //skriver till bytes
+                //    System.out.println("Clienten readFromServer");
+                String fromServer = null;
+                fromServer = new String(bytes, "UTF-8");
+                System.out.println(fromServer);
+                key.interestOps(SelectionKey.OP_WRITE);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            });
+
+
+
     }
 
     private void writeToServer(SelectionKey key) throws IOException{
