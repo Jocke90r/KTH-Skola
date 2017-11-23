@@ -1,5 +1,9 @@
 package Server.Net;
 
+//import Server.Controller.Controller;
+
+import Server.Model.Hangman;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -23,9 +27,13 @@ public class HangmanServer {
     private ServerSocketChannel serverChannel;
     private ServerSocket serverSocket;
     public ByteBuffer messageToClient;
-    private boolean write;
+    public boolean write;
     private final Queue<ByteBuffer> messagesToSend = new ArrayDeque<>();
-
+    Hangman hangman = new Hangman();
+   // private final Controller controller;
+  /* public HangmanServer(){
+       controller = new Controller();
+    }*/
     private void run() {
         try {
             initializeSelector();
@@ -49,7 +57,7 @@ public class HangmanServer {
                         listenFromClient(key);
                     } else if(key.isWritable()){
 
-                        messageHandler("tet");
+                        messageHandler("inne i writable på serversidan före körningen av writeToClient");
                         writeToClient(key);
 
                     }
@@ -67,6 +75,7 @@ public class HangmanServer {
         while(!messagesToSend.isEmpty()){
             channel.write(messagesToSend.poll());
             System.out.println("Nu är vi i write server ");
+
         }
         key.interestOps(SelectionKey.OP_READ);
 
@@ -96,6 +105,11 @@ public class HangmanServer {
         byte[] bytes = new byte[Buffer.remaining()];
         Buffer.get(bytes); //skriver till bytes
         System.out.println("Läser " + new String(bytes, "UTF-8"));
+        String input = new String(bytes, "UTF-8");
+       /* if(input.equalsIgnoreCase("yes")){
+            hangman.startGame();
+        }
+        hangman.setGuess(input);*/
         key.interestOps(SelectionKey.OP_WRITE);
     }
 
@@ -127,8 +141,11 @@ public class HangmanServer {
         String test = "hej nu har vi här";
         messageToClient = ByteBuffer.wrap(test.getBytes(StandardCharsets.UTF_8));
         messagesToSend.add(messageToClient);
+        messageToClient.clear();
         write=true;
-        selector.wakeup();
+        System.out.println("sista raden i messageHandler på servern");
+
+//        selector.wakeup();
     }
 
     public  static void main(String[] args){

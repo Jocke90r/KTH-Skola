@@ -1,10 +1,10 @@
-package Server.model;
+package Server.Model;
 
 /**
  * Created by Joakim on 2017-11-09.
  */
 
-import Server.net.HangmanServer;
+import Server.Net.HangmanServer;
 
 import java.io.*;
 import java.net.Socket;
@@ -14,12 +14,7 @@ import java.util.Arrays;
 import static java.lang.Math.random;
 
 
-public class Hangman extends Thread{
-
-    Socket socket;
-    //HangmanServer server;
-    DataInputStream dataIn;
-    DataOutputStream dataOut;
+public class Hangman {
 
     public ArrayList<String> words;
     private int guesses;
@@ -29,44 +24,17 @@ public class Hangman extends Thread{
     public char[] playResult;
     private int step = 0;
     boolean hitOrMiss;
-    private  String guess;
+    private String guess = null;
 
-    public Hangman(Socket socket, HangmanServer server){
-        super("HangManThread");
-        this.socket = socket;
-        this.server = server;
-        this.guesses = 0;
-    }
-
-    public void run(){
-
-        try {
-            dataIn = new DataInputStream(socket.getInputStream()); //input från klienten
-            dataOut = new DataOutputStream(socket.getOutputStream());//output till klienten (console)
-            dataOut.writeUTF("Welcome to Hangman game, to play input 'yes' or to exit input 'quit' ");
-            dataOut.flush();
-
-            while (true) { //så länge det inte finns data så ska vi söva tråden en millisekund för att inte ta CPUkraft hela tiden
-                while (dataIn.available() == 0) {
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                String input = dataIn.readUTF();
-                if (input.equalsIgnoreCase("yes")) { //starta spelet om klienter skickar "yes"
-                    startGame();
-                }
-
-            }
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
+  /*  public void setGuess(String msg) {
+        this.guess = msg;
     }
 
 
-    public void startGame(){
+
+
+    public void startGame() {
+        HangmanServer hangmanServer = new HangmanServer();
         hangManWord();                              //skapar en lista med ord
         gameWord = randomWord();                    //hämtar ett ord från listan som innehåller alla ord
         splitGameWord = gameWord.toCharArray();     //delar upp ordet till en array av chars för att kunna jämföra.
@@ -74,89 +42,78 @@ public class Hangman extends Thread{
         guesses = splitGameWord.length;             //sätter antalet gissningar till längden på ordet
         System.out.println(gameWord);               //skapar CHEEEATS om man har tillgång till servern
 
-        try {
-            dataOut.writeUTF("Start game: \nYou have " + splitGameWord.length + " guesses and the word has " + splitGameWord.length + " letters " +
-                    "\nGuess one letter or the entire word: \nYour score is: " + scoreBoard );
-            dataOut.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+       if(true) {
+           System.out.println("före hangmanserver");
+           hangmanServer.messageHandler("Start game: You have " );
+           System.out.println("efter hangmanserver");
+       }
+        //om det finns något i dataIn så sätts guess till det ordet/bokstaven som klienten skickat OM det finns några gissningar kvar.
+        while (guess != null && guesses >= 1) {
+            //Om Guess bara är ett tecken så körs denna del
+            if (guess.length() == 1) {
+                //kallar på guessChar som kollar om tecknet finns i ordet.
+                playResult = guessChar(guess.charAt(0), playResult, splitGameWord);
 
-        try {//om det finns något i dataIn så sätts guess till det ordet/bokstaven som klienten skickat OM det finns några gissningar kvar.
-            while((guess = dataIn.readUTF()) != null && guesses >= 1)  {
-                //Om Guess bara är ett tecken så körs denna del
-                if(guess.length() == 1){
-                    //kallar på guessChar som kollar om tecknet finns i ordet.
-                    playResult = guessChar(guess.charAt(0), playResult, splitGameWord);
-
-                    //om playresult är detsamma som ordet vi ska gissa så sätts step till 1 för att användas i switchen nedan.
-                    if(new String(playResult).equalsIgnoreCase(gameWord)){
-                        step = 1;
-                    }
-                    //Switch som bestämmer om guesses skall minskas eller om scoreboard skall ökas.
-                    switch(step) {
-                        case 0:
-
-                            if (hitOrMiss == false) {
-                                guesses--;
-                            }
-
-                            dataOut.writeUTF(Arrays.toString(playResult) + "\nYou have " + guesses + " guesses left");
-                            dataOut.flush();
-                            break;
-                        //det rätta ordet är hittat inom rätt antal försök och scoreboard inkrementeras med ett plus att användaren kan välja att skapa ett nytt spel
-                        case 1:
-                            step = 0;
-                            scoreBoard++;
-                            dataOut.writeUTF("Congratulations you guessed the correct word. \nYour score is: " + scoreBoard +
-                                    "\nDo you want to restart the game write yes or quit to exit");
-                            if((guess = dataIn.readUTF()).equalsIgnoreCase("yes")){
-                                startGame();
-                            }
-                            dataOut.flush();
-                            break;
-                    }
+                //om playresult är detsamma som ordet vi ska gissa så sätts step till 1 för att användas i switchen nedan.
+                if (new String(playResult).equalsIgnoreCase(gameWord)) {
+                    step = 1;
                 }
-                //om klienten chansar på ett ord som är längre än ett tecken
-                if(guess.length() > 1){
-                    if(guess.equalsIgnoreCase(gameWord)) {
-                        scoreBoard++;
-                        dataOut.writeUTF("Congratulations you guessed the correct word. " + guess + "\nYour score is: " + scoreBoard);
-                        dataOut.writeUTF("Do you want to restart the game write yes or quit to exit");
-                        if((guess = dataIn.readUTF()).equalsIgnoreCase("yes")){
-                            startGame();
-                        }else if((guess = dataIn.readUTF()).equalsIgnoreCase("yes")){
+                //Switch som bestämmer om guesses skall minskas eller om scoreboard skall ökas.
+                switch (step) {
+                    case 0:
 
+                        if (hitOrMiss == false) {
+                            guesses--;
                         }
-                        dataOut.flush();
 
+                        hangmanServer.messageHandler(Arrays.toString(playResult) + "\nYou have " + guesses + " guesses left");
+                        break;
+                    //det rätta ordet är hittat inom rätt antal försök och scoreboard inkrementeras med ett plus att användaren kan välja att skapa ett nytt spel
+                    case 1:
+                        step = 0;
+                        scoreBoard++;
+                        hangmanServer.messageHandler("Congratulations you guessed the correct word. \nYour score is: " + scoreBoard +
+                                "\nDo you want to restart the game write yes or quit to exit");
+                        if ((guess.equalsIgnoreCase("yes"))) {
+                            startGame();
+                        }
+
+                        break;
+                }
+            }
+            //om klienten chansar på ett ord som är längre än ett tecken
+            if (guess.length() > 1) {
+                if (guess.equalsIgnoreCase(gameWord)) {
+                    scoreBoard++;
+                    hangmanServer.messageHandler("Congratulations you guessed the correct word. " + guess + "\nYour score is: " + scoreBoard);
+                    hangmanServer.messageHandler("Do you want to restart the game write yes or quit to exit");
+                    if ((guess.equalsIgnoreCase("yes"))) {
+                        startGame();
                     }
-
-
-                    else{
-
-                        guesses--;
-                        dataOut.writeUTF("Wrong word, try again");
-                        dataOut.writeUTF(Arrays.toString(playResult) + "\nYou have " + guesses + " guesses left");
-                        dataOut.flush();
-                    }
-
+                } else if(guess.equalsIgnoreCase("yes")){
+                    guesses--;
+                    hangmanServer.messageHandler("Wrong word, try again");
+                    hangmanServer.messageHandler(Arrays.toString(playResult) + "\nYou have " + guesses + " guesses left");
                 }
 
-            }
-            scoreBoard--;
-            dataOut.writeUTF("You have no guesses left \nYour score is: " + scoreBoard + "\nTo restart the game write yes or quit to exit");
-            if(guess.equalsIgnoreCase("yes")){
-                startGame();
-            }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            }
         }
+
+        if (guess != null) {
+            scoreBoard--;
+            hangmanServer.messageHandler("You have no guesses left \nYour score is: " + scoreBoard + "\nTo restart the game write yes or quit to exit");
+            if (guess.equalsIgnoreCase("yes")) {
+                startGame();
+            }else if(guess.equalsIgnoreCase("quit")){
+
+            }
+        }
+
     }
 
 
-    public void hangManWord(){ //Tar filen words.txt och kopierar alla ord till en ordlista
+    public void hangManWord() { //Tar filen words.txt och kopierar alla ord till en ordlista
         words = new ArrayList<String>();
 
         try {
@@ -164,7 +121,7 @@ public class Hangman extends Thread{
             BufferedReader read = new BufferedReader(new FileReader(file));         //BufferedReader.readLine() reads a line of text
             String line;
             try {
-                while((line = read.readLine()) != null){
+                while ((line = read.readLine()) != null) {
                     words.add(line);
                 }
                 read.close();
@@ -178,7 +135,7 @@ public class Hangman extends Thread{
         }
     }
 
-    public String randomWord(){     //Tar ut ett random ord från ordlistan (words)
+    public String randomWord() {     //Tar ut ett random ord från ordlistan (words)
 
         int index = (int) (random() * words.size());
         return words.get(index).toLowerCase();
@@ -196,5 +153,5 @@ public class Hangman extends Thread{
         }
         return progressionWord;
     }
-
+*/
 }

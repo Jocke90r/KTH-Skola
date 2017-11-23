@@ -46,8 +46,10 @@ public class ServerConnect implements Runnable{
                     if (!key.isValid()) {
                         continue;
                     } else if (key.isReadable()) {
+                        System.out.println("inne i else if readable");
                         readFromServer(key);
                     } else if (key.isWritable()) {
+                        System.out.println("inne i else if writeable");
                         writeToServer(key);
                         }
                 }
@@ -93,10 +95,10 @@ public class ServerConnect implements Runnable{
         socketChannel.register(selector, SelectionKey.OP_CONNECT);
     }
 
-    public  void messageHandler(String msg) {
+    public void messageHandler(String msg) {
         messageToServer = ByteBuffer.wrap(msg.getBytes(StandardCharsets.UTF_8));
         messagesToSend.add(messageToServer);
-        //messageToServer.clear();
+        messageToServer.clear();
         write=true;
         selector.wakeup();
     }
