@@ -1,111 +1,107 @@
 package Server.Model;
 
 /**
- * Created by Joakim on 2017-11-09.
+ * Created by Chosrat on 2017-11-16.
  */
+
 
 import Server.Net.HangmanServer;
 
 import java.io.*;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import static java.lang.Math.random;
 
-
 public class Hangman {
 
     public ArrayList<String> words;
-    private int guesses;
+    private int guesses = 0;
     private int scoreBoard;
     public String gameWord;
     public char[] splitGameWord;
     public char[] playResult;
-    private int step = 0;
+    int step = 0;
     boolean hitOrMiss;
-    private String guess = null;
+    public HangmanServer.Client client;
 
-  /*  public void setGuess(String msg) {
+    public String guess;
+
+    public Hangman(HangmanServer.Client client) {
+        this.guess = null;
+        this.client = client;
+        //client.messageHandler("(5000);wait(5000);wait(5000);wait(5000);wait(5000);wait(5000);wait(5000);wait(5000);wait(5000);");
+        startGame(client);
+    }
+
+    public void setGuess(String msg){
         this.guess = msg;
     }
 
+    public void gameLoop(){
 
+        if (guess.length() == 1) {
+            //Om användaren gissat 1 bokstav skickas den iväg tillsammans med spelordet för att se om den får träff eller inte
+            playResult = guessChar(guess.charAt(0), playResult, splitGameWord);
 
-
-    public void startGame() {
-        HangmanServer hangmanServer = new HangmanServer();
-        hangManWord();                              //skapar en lista med ord
-        gameWord = randomWord();                    //hämtar ett ord från listan som innehåller alla ord
-        splitGameWord = gameWord.toCharArray();     //delar upp ordet till en array av chars för att kunna jämföra.
-        playResult = new char[splitGameWord.length];//skapar en chararray med så många tecken som spelordet är på.
-        guesses = splitGameWord.length;             //sätter antalet gissningar till längden på ordet
-        System.out.println(gameWord);               //skapar CHEEEATS om man har tillgång till servern
-
-       if(true) {
-           System.out.println("före hangmanserver");
-           hangmanServer.messageHandler("Start game: You have " );
-           System.out.println("efter hangmanserver");
-       }
-        //om det finns något i dataIn så sätts guess till det ordet/bokstaven som klienten skickat OM det finns några gissningar kvar.
-        while (guess != null && guesses >= 1) {
-            //Om Guess bara är ett tecken så körs denna del
-            if (guess.length() == 1) {
-                //kallar på guessChar som kollar om tecknet finns i ordet.
-                playResult = guessChar(guess.charAt(0), playResult, splitGameWord);
-
-                //om playresult är detsamma som ordet vi ska gissa så sätts step till 1 för att användas i switchen nedan.
-                if (new String(playResult).equalsIgnoreCase(gameWord)) {
-                    step = 1;
-                }
-                //Switch som bestämmer om guesses skall minskas eller om scoreboard skall ökas.
-                switch (step) {
-                    case 0:
-
-                        if (hitOrMiss == false) {
-                            guesses--;
-                        }
-
-                        hangmanServer.messageHandler(Arrays.toString(playResult) + "\nYou have " + guesses + " guesses left");
-                        break;
-                    //det rätta ordet är hittat inom rätt antal försök och scoreboard inkrementeras med ett plus att användaren kan välja att skapa ett nytt spel
-                    case 1:
-                        step = 0;
-                        scoreBoard++;
-                        hangmanServer.messageHandler("Congratulations you guessed the correct word. \nYour score is: " + scoreBoard +
-                                "\nDo you want to restart the game write yes or quit to exit");
-                        if ((guess.equalsIgnoreCase("yes"))) {
-                            startGame();
-                        }
-
-                        break;
-                }
+            //kollar Om bokstaven som matades skapade resten av ordet
+            if (new String(playResult).equalsIgnoreCase(gameWord)) {
+                System.out.println("om vi kommer in i step så skriver denna ut detta");
+                step = 1;
             }
-            //om klienten chansar på ett ord som är längre än ett tecken
-            if (guess.length() > 1) {
-                if (guess.equalsIgnoreCase(gameWord)) {
-                    scoreBoard++;
-                    hangmanServer.messageHandler("Congratulations you guessed the correct word. " + guess + "\nYour score is: " + scoreBoard);
-                    hangmanServer.messageHandler("Do you want to restart the game write yes or quit to exit");
-                    if ((guess.equalsIgnoreCase("yes"))) {
-                        startGame();
+
+            switch (step) {
+                case 0:
+                    //Om bokstaven inte finns i order
+                    if (hitOrMiss == false) {
+                        guesses--;
                     }
-                } else if(guess.equalsIgnoreCase("yes")){
-                    guesses--;
-                    hangmanServer.messageHandler("Wrong word, try again");
-                    hangmanServer.messageHandler(Arrays.toString(playResult) + "\nYou have " + guesses + " guesses left");
-                }
+
+                    client.messageHandler(Arrays.toString(playResult) + "\nYou have " + guesses + " guesses left");
+                    break;
+
+                case 1:
+                    //Om bokstaven fanns i ordet och ordet blev komplett då avslutas spelet
+                    step = 0;
+                    scoreBoard++;
+                    client.messageHandler("Congratulations you guessed the correct word. \nYour score is: " + scoreBoard +
+                            "\nDo you want to restart the game write yes or quit to exit");
 
 
+                    if ((guess.equalsIgnoreCase("yes"))){
+                        startGame(client);
+                    }
+                    break;
             }
         }
 
-        if (guess != null) {
+        if (guess.length() > 1) {   //Om användaren gissar på hela ordet
+            if ((guess.equalsIgnoreCase("yes"))) {
+                startGame(client);
+            }else {
+                if (guess.equalsIgnoreCase(gameWord)) {
+                    scoreBoard++;
+                    client.messageHandler("Congratulations you guessed the correct word. " + guess + "\nYour score is: " + scoreBoard);
+                    client.messageHandler("\nDo you want to restart the game write yes or quit to exit");
+
+
+                } else {
+                    guesses--;
+                    client.messageHandler("Wrong word, try again");
+                    client.messageHandler("\n" + Arrays.toString(playResult) + "\nYou have " + guesses + " guesses left");
+
+                }
+            }
+        }
+
+
+        //Startar om eller avslutar spelet
+        if(guess != null && guesses <= 0){
             scoreBoard--;
-            hangmanServer.messageHandler("You have no guesses left \nYour score is: " + scoreBoard + "\nTo restart the game write yes or quit to exit");
+            client.messageHandler("You have no guesses left \nYour score is: " + scoreBoard + "\nTo restart the game write yes or quit to exit");
             if (guess.equalsIgnoreCase("yes")) {
-                startGame();
-            }else if(guess.equalsIgnoreCase("quit")){
+                startGame(client);
+            } else if (guess.equalsIgnoreCase("quit")) {
 
             }
         }
@@ -113,11 +109,96 @@ public class Hangman {
     }
 
 
-    public void hangManWord() { //Tar filen words.txt och kopierar alla ord till en ordlista
+
+
+    public void startGame(HangmanServer.Client client) {                            //Hangman spelet
+        //HangmanServer hangmanServer = new HangmanServer();
+        hangManWord();                                   //Skapar en lista med olika ord
+        gameWord = randomWord();                         //Plockar ut ett slumpmässigt ord från listan
+        splitGameWord = gameWord.toCharArray();         //Konventerar ordet till en charArray
+        playResult = new char[splitGameWord.length];    //Skapar en tom charArray med längden av spelordet där rätt bokstav sparas
+        guesses = splitGameWord.length;                 //Antal gissningar
+        System.out.println(gameWord);                    //Skriver ut ordet i systemets command line för testa hela ordet.
+
+
+      //  client.messageHandler("Start game: \n Guess one letter or the entire word: \nYour score is: " + scoreBoard);
+
+          //Om det finns något i dataIn dvs om användaren har matat in ett ord eller bokstad och om det finns gissningar kvar
+
+
+/*
+                if (guess.length() == 1) {
+                    //Om användaren gissat 1 bokstav skickas den iväg tillsammans med spelordet för att se om den får träff eller inte
+                    playResult = guessChar(guess.charAt(0), playResult, splitGameWord);
+
+                    //kollar Om bokstaven som matades skapade resten av ordet
+                    if (new String(playResult).equalsIgnoreCase(gameWord)) {
+                        step = 1;
+                    }
+
+                    switch (step) {
+                        case 0:
+                            //Om bokstaven inte finns i order
+                            if (hitOrMiss == false) {
+                                guesses--;
+                            }
+
+                            server.messageHandler(Arrays.toString(playResult) + "\nYou have " + guesses + " guesses left");
+                            break;
+
+                        case 1:
+                            //Om bokstaven fanns i ordet och ordet blev komplett då avslutas spelet
+                            step = 0;
+                            scoreBoard++;
+                            server.messageHandler("Congratulations you guessed the correct word. \nYour score is: " + scoreBoard +
+                                    "\nDo you want to restart the game write yes or quit to exit");
+
+
+                            if ((guess.equalsIgnoreCase("yes"))){
+                                startGame(server);
+                            }
+                            break;
+                    }
+                }
+
+                if (guess.length() > 1) {   //Om användaren gissar på hela ordet
+                    if (guess.equalsIgnoreCase(gameWord)) {
+                        scoreBoard++;
+                        server.messageHandler("Congratulations you guessed the correct word. " + guess + "\nYour score is: " + scoreBoard);
+                        server.messageHandler("Do you want to restart the game write yes or quit to exit");
+
+                        if ((guess.equalsIgnoreCase("yes"))) {
+                            startGame(server);
+                        }
+                    } else {
+                        guesses--;
+                        server.messageHandler("FAAAAAIL!!! try again");
+                        server.messageHandler(Arrays.toString(playResult) + "\nYou have " + guesses + " guesses left");
+
+                    }
+
+                }
+
+
+            //Startar om eller avslutar spelet
+            if(guess != null){
+            scoreBoard--;
+            server.messageHandler("You have no guesses left \nYour score is: " + scoreBoard + "\nTo restart the game write yes or quit to exit");
+            if (guess.equalsIgnoreCase("yes")) {
+                startGame(server);
+            } else if (guess.equalsIgnoreCase("quit")) {
+
+            }
+            }
+*/
+    }
+
+
+    public void hangManWord() {         //Tar filen words.txt och kopierar alla ord till en ordlista
         words = new ArrayList<String>();
 
         try {
-            File file = new File("/Users/Joaki/IdeaProjects/KTH-Skola/HomeWorkOne//src/Server/model/words.txt");
+            File file = new File("/Users/joaki/IdeaProjects/KTH-skola/HomeWorkTwo/src/Server/Model/words.txt");
             BufferedReader read = new BufferedReader(new FileReader(file));         //BufferedReader.readLine() reads a line of text
             String line;
             try {
@@ -142,8 +223,8 @@ public class Hangman {
     }
 
 
-    public char[] guessChar(char guess, char[] progressionWord, char[] word) {
-        hitOrMiss = false;
+    public char[] guessChar(char guess, char[] progressionWord, char[] word) {    //Tar in en bookstav och ser om den finns i ordet
+        hitOrMiss = false;                                                  //Använder boolean för att minsta på antal gissnings försök
         for (int i = 0; i < word.length; i++) {
             if (word[i] == guess) {
                 hitOrMiss = true;
@@ -153,5 +234,5 @@ public class Hangman {
         }
         return progressionWord;
     }
-*/
+
 }
