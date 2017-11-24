@@ -30,15 +30,15 @@ public class Hangman {
     public Hangman(HangmanServer.Client client) {
         this.guess = null;
         this.client = client;
-        //client.messageHandler("(5000);wait(5000);wait(5000);wait(5000);wait(5000);wait(5000);wait(5000);wait(5000);wait(5000);");
         startGame(client);
     }
 
-    public void setGuess(String msg){
+    public void setGuess(String msg) {
         this.guess = msg;
     }
 
-    public void gameLoop(){
+    //tar emot gissningar från spelaren och kollar om det stämmer.
+    public void gameLoop() {
 
         if (guess.length() == 1) {
             //Om användaren gissat 1 bokstav skickas den iväg tillsammans med spelordet för att se om den får träff eller inte
@@ -52,10 +52,11 @@ public class Hangman {
 
             switch (step) {
                 case 0:
-                    //Om bokstaven inte finns i order
+                    //Om bokstaven inte finns i ordet
                     if (hitOrMiss == false) {
                         guesses--;
                     }
+                    //Detta borde vi inte göra om vi skall uppfylla MVC.. men vi har haft för mycket problem med trådar.
 
                     client.messageHandler(Arrays.toString(playResult) + "\nYou have " + guesses + " guesses left");
                     break;
@@ -68,7 +69,7 @@ public class Hangman {
                             "\nDo you want to restart the game write yes or quit to exit");
 
 
-                    if ((guess.equalsIgnoreCase("yes"))){
+                    if ((guess.equalsIgnoreCase("yes"))) {
                         startGame(client);
                     }
                     break;
@@ -78,7 +79,7 @@ public class Hangman {
         if (guess.length() > 1) {   //Om användaren gissar på hela ordet
             if ((guess.equalsIgnoreCase("yes"))) {
                 startGame(client);
-            }else {
+            } else {
                 if (guess.equalsIgnoreCase(gameWord)) {
                     scoreBoard++;
                     client.messageHandler("Congratulations you guessed the correct word. " + guess + "\nYour score is: " + scoreBoard);
@@ -96,7 +97,7 @@ public class Hangman {
 
 
         //Startar om eller avslutar spelet
-        if(guess != null && guesses <= 0){
+        if (guess != null && guesses <= 0) {
             scoreBoard--;
             client.messageHandler("You have no guesses left \nYour score is: " + scoreBoard + "\nTo restart the game write yes or quit to exit");
             if (guess.equalsIgnoreCase("yes")) {
@@ -109,90 +110,15 @@ public class Hangman {
     }
 
 
-
-
     public void startGame(HangmanServer.Client client) {                            //Hangman spelet
-        //HangmanServer hangmanServer = new HangmanServer();
         hangManWord();                                   //Skapar en lista med olika ord
         gameWord = randomWord();                         //Plockar ut ett slumpmässigt ord från listan
         splitGameWord = gameWord.toCharArray();         //Konventerar ordet till en charArray
         playResult = new char[splitGameWord.length];    //Skapar en tom charArray med längden av spelordet där rätt bokstav sparas
         guesses = splitGameWord.length;                 //Antal gissningar
         System.out.println(gameWord);                    //Skriver ut ordet i systemets command line för testa hela ordet.
-
-
-      //  client.messageHandler("Start game: \n Guess one letter or the entire word: \nYour score is: " + scoreBoard);
-
-          //Om det finns något i dataIn dvs om användaren har matat in ett ord eller bokstad och om det finns gissningar kvar
-
-
-/*
-                if (guess.length() == 1) {
-                    //Om användaren gissat 1 bokstav skickas den iväg tillsammans med spelordet för att se om den får träff eller inte
-                    playResult = guessChar(guess.charAt(0), playResult, splitGameWord);
-
-                    //kollar Om bokstaven som matades skapade resten av ordet
-                    if (new String(playResult).equalsIgnoreCase(gameWord)) {
-                        step = 1;
-                    }
-
-                    switch (step) {
-                        case 0:
-                            //Om bokstaven inte finns i order
-                            if (hitOrMiss == false) {
-                                guesses--;
-                            }
-
-                            server.messageHandler(Arrays.toString(playResult) + "\nYou have " + guesses + " guesses left");
-                            break;
-
-                        case 1:
-                            //Om bokstaven fanns i ordet och ordet blev komplett då avslutas spelet
-                            step = 0;
-                            scoreBoard++;
-                            server.messageHandler("Congratulations you guessed the correct word. \nYour score is: " + scoreBoard +
-                                    "\nDo you want to restart the game write yes or quit to exit");
-
-
-                            if ((guess.equalsIgnoreCase("yes"))){
-                                startGame(server);
-                            }
-                            break;
-                    }
-                }
-
-                if (guess.length() > 1) {   //Om användaren gissar på hela ordet
-                    if (guess.equalsIgnoreCase(gameWord)) {
-                        scoreBoard++;
-                        server.messageHandler("Congratulations you guessed the correct word. " + guess + "\nYour score is: " + scoreBoard);
-                        server.messageHandler("Do you want to restart the game write yes or quit to exit");
-
-                        if ((guess.equalsIgnoreCase("yes"))) {
-                            startGame(server);
-                        }
-                    } else {
-                        guesses--;
-                        server.messageHandler("FAAAAAIL!!! try again");
-                        server.messageHandler(Arrays.toString(playResult) + "\nYou have " + guesses + " guesses left");
-
-                    }
-
-                }
-
-
-            //Startar om eller avslutar spelet
-            if(guess != null){
-            scoreBoard--;
-            server.messageHandler("You have no guesses left \nYour score is: " + scoreBoard + "\nTo restart the game write yes or quit to exit");
-            if (guess.equalsIgnoreCase("yes")) {
-                startGame(server);
-            } else if (guess.equalsIgnoreCase("quit")) {
-
-            }
-            }
-*/
+        client.messageHandler("Game is starting, your current score is " + scoreBoard);
     }
-
 
     public void hangManWord() {         //Tar filen words.txt och kopierar alla ord till en ordlista
         words = new ArrayList<String>();

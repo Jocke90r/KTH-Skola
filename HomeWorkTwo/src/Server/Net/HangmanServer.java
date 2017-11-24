@@ -19,53 +19,34 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 
 /**
- * Created by Chosrat on 2017-11-21.
+ * Created by Joakim on 2017-11-21.
  */
 public class HangmanServer {
 
     private Selector selector;
     private ServerSocketChannel serverChannel;
     private ServerSocket serverSocket;
-    //public ByteBuffer messageToClient;
-    private boolean write;
 
-    //public Controller controller = new Controller();
-    //Hangman hangman;
-    // private final Queue<ByteBuffer> messagesToSend = new ArrayDeque<>();
-
-
+    //startar servern när main körs igång
     private void run() {
         try {
             initializeSelector();
             initializeSocketChannel();
             while (true) {
 
-          /*      if(write){
-                    serverChannel.keyFor(selector).interestOps(SelectionKey.OP_WRITE);
-                    write = false;
-                }
-*/
+
                 selector.select();
                 Iterator<SelectionKey> keys = selector.selectedKeys().iterator(); //Itererar igenom tillgängliga nycklar
                 while (keys.hasNext()) {
                     SelectionKey key = keys.next();
                     keys.remove();
                     if (key.isAcceptable()) {
-                        //       System.out.println("Inne i Server Acceptable");
                         clientConnect(key);
-                        // hangman = new Hangman(this);
                     }
                     if (key.isReadable()) {
-
-                        //      System.out.println("Inne i Server isReadable");
-
                         listenFromClient(key);
                     }
                     if (key.isWritable()) {
-                        // messageHandler("Skriver från server writable till clienten");
-
-
-                        //   System.out.println("Inne i Server isWritable");
                         writeToClient(key);
                     }
                 }
@@ -75,7 +56,7 @@ public class HangmanServer {
         }
 
     }
-
+    //Skriv till klienten
     private void writeToClient(SelectionKey key) throws IOException {
         SocketChannel channel = (SocketChannel) key.channel();
         Client client = (Client) key.attachment();
@@ -84,7 +65,6 @@ public class HangmanServer {
 
         }
         key.interestOps(SelectionKey.OP_READ);
-        //  System.out.println("Inne i Write to client");
 
     }
 
@@ -101,15 +81,11 @@ public class HangmanServer {
                 Buffer.flip();
                 byte[] bytes = new byte[Buffer.remaining()];
                 Buffer.get(bytes); //skriver till bytes
-                // System.out.println("Inne i listenFromClient");
-                String input = null;
+                String input;
                 input = new String(bytes, "UTF-8");
                 Client client = (Client) key.attachment();
                 client.hangman.setGuess(input);
                 client.hangman.gameLoop();
-                //if(input.equalsIgnoreCase("yes"))
-                //  {Hangman hangman = new Hangman(this);}
-                // System.out.println(input);
                 key.interestOps(SelectionKey.OP_WRITE);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -142,7 +118,7 @@ public class HangmanServer {
         SocketChannel clientChannel = serverSocketChannel.accept();
         clientChannel.configureBlocking(false);
         Client client = new Client();
-        clientChannel.register(selector, SelectionKey.OP_READ, client);
+        clientChannel.register(selector, SelectionKey.OP_WRITE, client);
     }
 
 
@@ -150,7 +126,8 @@ public class HangmanServer {
         HangmanServer server = new HangmanServer();
         server.run();
     }
-
+    //skapar en klient som hanterar de enskilda spelen så att klienterna kan spela samtidigt mot servern utan att påverka varandra.
+    //Varje klient har sin egen messagehandler.
     public class Client {
 
         public Hangman hangman;
@@ -164,8 +141,7 @@ public class HangmanServer {
             ByteBuffer messageToClient = ByteBuffer.wrap(msg.getBytes(StandardCharsets.UTF_8));
             messagesToSend.add(messageToClient);
             messageToClient.clear();
-            write = true;
-            // System.out.println("Inne i Server messageHandler");
+
             selector.wakeup();
         }
     }

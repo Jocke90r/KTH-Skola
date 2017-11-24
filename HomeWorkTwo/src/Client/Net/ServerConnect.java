@@ -1,6 +1,7 @@
 package Client.Net;
 
-import Client.controller.Controller;
+
+import Client.View.Interpreter;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -17,7 +18,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 
 /**
- * Created by Chosrat on 2017-11-21.
+ * Created by Joakim on 2017-11-21.
  */
 public class ServerConnect implements Runnable{
 
@@ -28,6 +29,7 @@ public class ServerConnect implements Runnable{
     private boolean write;
     private final Queue<ByteBuffer> messagesToSend = new ArrayDeque<>();
 
+    //Starta ny tråd för klienten som i sin tur startar run
     public void connect(){
         new Thread(this).start();
     }
@@ -35,38 +37,30 @@ public class ServerConnect implements Runnable{
     @Override
     public void run(){
         try {
-            //configureConnection();
+           // Initialisera selectorn
             initializeSelector();
 
             while (true) {
 
-                if(write){
+                if(write){ //Om det finns meddelanden i kön så ändrar vi operation till "WRITE" för att kunna skriva.
                     socketChannel.keyFor(selector).interestOps(SelectionKey.OP_WRITE);
                     write = false;
                 }
+                //Kollar vilken typ av key som finns och kör därefter den metoden som tillhör det.
                 selector.select();
                 Iterator<SelectionKey> keys = selector.selectedKeys().iterator();
                 while (keys.hasNext()) {
-                  //  System.out.println("while keys");
-
                     SelectionKey key = keys.next();
                     keys.remove();
                     if (!key.isValid()) {
-              //          System.out.println("Inne i Client isValid");
                         continue;
                     } else if(key.isConnectable()){
-
-                //        System.out.println("Inne i Client isConnectable");
                         configureConnection(key);
                     }
                     else if (key.isReadable()) {
-
-                  //      System.out.println("Inne i Client isReadable");
-                        readFromServer(key);
+                         readFromServer(key);
                     } else if (key.isWritable()) {
-
-                    //    System.out.println("Inne i Client isWritable");
-                        writeToServer(key);
+                         writeToServer(key);
                     }
                 }
             }
@@ -75,7 +69,9 @@ public class ServerConnect implements Runnable{
             e.printStackTrace();
         }
     }
-
+    /*
+    * Läser från servern och lämnar tillbaka en tråd och hämtar en ny via forkjoinpool för att Servern skall kunna fortsätta köra
+    * */
     private void readFromServer(SelectionKey key) throws IOException{
         ByteBuffer bufferFromServer = ByteBuffer.allocate(256);
         SocketChannel channel = (SocketChannel) key.channel();
@@ -88,10 +84,10 @@ public class ServerConnect implements Runnable{
                 bufferFromServer.flip();
                 byte[] bytes = new byte[bufferFromServer.remaining()];
                 bufferFromServer.get(bytes); //skriver till bytes
-                //    System.out.println("Clienten readFromServer");
                 String fromServer = null;
                 fromServer = new String(bytes, "UTF-8");
-                System.out.println(fromServer);
+                Interpreter interpreter = new Interpreter();
+                interpreter.writeMessage(fromServer);
                 key.interestOps(SelectionKey.OP_WRITE);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -102,7 +98,7 @@ public class ServerConnect implements Runnable{
 
 
     }
-
+    //Skriver till servern om det finns ett meddelande i kön.
     private void writeToServer(SelectionKey key) throws IOException{
 
         while(!messagesToSend.isEmpty()){
@@ -110,17 +106,14 @@ public class ServerConnect implements Runnable{
 
         }
         key.interestOps(SelectionKey.OP_READ);
-    //    System.out.println("Inne i writetoserver");
-
     }
-
+    //skapar uppkoppling
     private void configureConnection(SelectionKey key) throws IOException {
-
-
         socketChannel.finishConnect();
         key.interestOps(SelectionKey.OP_READ);
     }
 
+    //inställningarna för selector och socketchannel för att kunna koppla upp mot servern.
     private void initializeSelector() throws IOException{
         socketChannel = SocketChannel.open();
         socketChannel.configureBlocking(false);
@@ -128,16 +121,15 @@ public class ServerConnect implements Runnable{
         selector = Selector.open();
         socketChannel.register(selector, SelectionKey.OP_CONNECT);
     }
-
+    //Tar emot meddelande från klienten och skickar till servern.
     public  void messageHandler(String msg) {
         messageToServer = ByteBuffer.wrap(msg.getBytes(StandardCharsets.UTF_8));
         messagesToSend.add(messageToServer);
         //System.out.println(msg);
         write = true;
         selector.wakeup();
-      //  System.out.println("clienten messageHandler");
-    }
-
+      }
+    //avslutar uppkopplingen
     public void disConnect() throws IOException{
         socketChannel.close();
         socketChannel.keyFor(selector).cancel();

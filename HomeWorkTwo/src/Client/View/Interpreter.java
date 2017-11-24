@@ -1,16 +1,15 @@
 package Client.View;
 
-import Client.controller.Controller;
 import Client.Net.ServerConnect;
 
 import java.io.IOException;
 import java.util.Scanner;
 
-public class Interpreter implements Runnable{
+public class Interpreter implements Runnable {
 
     private final ServerConnect client = new ServerConnect();
 
-
+    //Startar en tråd för att hantera vyn. Och data från servern som skall skrivas ut till användaren.
     public void start(){
         new Thread(this).start();
     }
@@ -34,7 +33,6 @@ public class Interpreter implements Runnable{
             if(input.toLowerCase().equalsIgnoreCase("quit")){
                 break;
             }
-            //System.out.println("Messagehandler");
             client.messageHandler(input);
         }
        try {
@@ -42,6 +40,10 @@ public class Interpreter implements Runnable{
        } catch (IOException e) {
            e.printStackTrace();
        }
+
    }
 
+    public void writeMessage(String msg){
+        System.out.println(msg);
+    }
 }

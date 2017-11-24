@@ -1,12 +1,10 @@
 package Client.Startup;
 
 
-import Client.controller.Controller;
-import Client.Net.ServerConnect;
 import Client.View.Interpreter;
 
 /**
- * Created by Chosrat on 2017-11-21.
+ * Created by Joakim on 2017-11-24.
  */
 public class Main {
 
