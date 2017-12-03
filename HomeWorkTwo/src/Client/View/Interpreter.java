@@ -44,6 +44,13 @@ public class Interpreter implements Runnable {
    }
 
     public void writeMessage(String msg){
+        if(msg.equalsIgnoreCase("quit")){
+            try {
+                client.disConnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         System.out.println(msg);
     }
 }
