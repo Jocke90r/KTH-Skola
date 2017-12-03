@@ -64,7 +64,7 @@ public class DbHandler {
         checkIfUserLoggedIn = connection.prepareStatement("SELECT id FROM user WHERE username = ? AND password = ?");
         deleteUser = connection.prepareStatement("DELETE FROM user WHERE username =? AND password=?");
         deleteFile = connection.prepareStatement("DELETE FROM files WHERE name = ? AND (publik = 1 OR id =?)");
-        uploadFile = connection.prepareStatement("INSERT INTO files (id,name,size,publik,file)VALUES (?,?,?,?,?)");
+        uploadFile = connection.prepareStatement("INSERT INTO files (id,name,publik,file)VALUES (?,?,?,?)");
         getFileName = connection.prepareStatement("SELECT * FROM files");
         downloadFile = connection.prepareStatement("SELECT file FROM files WHERE name = ? AND (publik = 1 OR id = ?)");
         listAllFiles = connection.prepareStatement("SELECT * FROM files WHERE publik =1 OR id = ?");
@@ -97,9 +97,8 @@ public class DbHandler {
         }
         uploadFile.setInt(1, fileCredentials.getOwnerId());
         uploadFile.setString(2, fileCredentials.getFilename());
-        uploadFile.setInt(3, 313);
-        uploadFile.setBoolean(4, fileCredentials.getPublik());
-        uploadFile.setBlob(5, data);
+        uploadFile.setBoolean(3, fileCredentials.getPublik());
+        uploadFile.setBlob(4, data);
         System.out.println("före execute");
         uploadFile.executeUpdate();
         return false;

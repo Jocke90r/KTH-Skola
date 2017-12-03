@@ -1,0 +1,9 @@
+files 	CREATE TABLE `files` (
+ `id` int(11) NOT NULL,
+ `name` varchar(30) NOT NULL,
+ `size` int(11) NOT NULL,
+ `publik` tinyint(1) NOT NULL,
+ `file` mediumblob,
+ PRIMARY KEY (`name`),
+ UNIQUE KEY `Files_name_uindex` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1

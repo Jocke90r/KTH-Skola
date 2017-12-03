@@ -1,0 +1,8 @@
+user 	CREATE TABLE `user` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `username` varchar(20) NOT NULL,
+ `password` varchar(20) DEFAULT NULL,
+ PRIMARY KEY (`id`),
+ UNIQUE KEY `user_username_uindex` (`username`),
+ UNIQUE KEY `user_id_uindex` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1

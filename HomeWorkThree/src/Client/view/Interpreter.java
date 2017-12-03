@@ -64,7 +64,7 @@ public class Interpreter implements Runnable {
                         listFiles();
                         break;
                     case "uploadfile":
-                        upload();
+                            upload();
                         break;
                     case "downloadfile":
                         downloadFile();
