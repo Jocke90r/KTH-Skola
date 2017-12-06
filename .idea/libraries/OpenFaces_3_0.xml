@@ -1,0 +1,24 @@
+<component name="libraryTable">
+  <library name="OpenFaces-3.0" type="jsf-openfaces">
+    <properties version="3.0" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/TestJSF/lib/sac.jar!/" />
+      <root url="file://$PROJECT_DIR$/TestJSF/lib/redistribution.txt" />
+      <root url="jar://$PROJECT_DIR$/TestJSF/lib/cssparser.jar!/" />
+      <root url="file://$PROJECT_DIR$/TestJSF/lib/openfaces-license.txt" />
+      <root url="jar://$PROJECT_DIR$/TestJSF/lib/jcommon.jar!/" />
+      <root url="file://$PROJECT_DIR$/TestJSF/lib/commons-codec-1.3-license.txt" />
+      <root url="jar://$PROJECT_DIR$/TestJSF/lib/commons-collections_2.jar!/" />
+      <root url="file://$PROJECT_DIR$/TestJSF/lib/dojo-license.txt" />
+      <root url="file://$PROJECT_DIR$/TestJSF/lib/cssparser-0.9.4-license.txt" />
+      <root url="file://$PROJECT_DIR$/TestJSF/lib/jdom-1.0-license.txt" />
+      <root url="file://$PROJECT_DIR$/TestJSF/lib/jfreechart-license.txt" />
+      <root url="file://$PROJECT_DIR$/TestJSF/lib/json-license.txt" />
+      <root url="file://$PROJECT_DIR$/TestJSF/lib/myfaces-license.txt" />
+      <root url="jar://$PROJECT_DIR$/TestJSF/lib/openfaces.jar!/" />
+      <root url="jar://$PROJECT_DIR$/TestJSF/lib/jfreechart.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

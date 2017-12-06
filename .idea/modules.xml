@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/HomeWorkThree/HomeWorkThree.iml" filepath="$PROJECT_DIR$/HomeWorkThree/HomeWorkThree.iml" />
       <module fileurl="file://$PROJECT_DIR$/HomeWorkTwo/HomeWorkTwo.iml" filepath="$PROJECT_DIR$/HomeWorkTwo/HomeWorkTwo.iml" />
       <module fileurl="file://$PROJECT_DIR$/KTH-skola.iml" filepath="$PROJECT_DIR$/KTH-skola.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TestJSF/TestJSF.iml" filepath="$PROJECT_DIR$/TestJSF/TestJSF.iml" />
     </modules>
   </component>
 </project>
