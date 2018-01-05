@@ -28,7 +28,7 @@ public class HangmanServer {
     public HangmanServer(){
 
         try {
-            socket = new ServerSocket(3333); //Listening for new connections in port 3333
+            socket = new ServerSocket(6970); //Listening for new connections in port 3333
             while(true){
 
                 Socket s = socket.accept(); //accepterar en connection om det finns någon.

@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/HomeWork4/HomeWork4.iml" filepath="$PROJECT_DIR$/HomeWork4/HomeWork4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/HomeWorkFour/HomeWorkFour.iml" filepath="$PROJECT_DIR$/HomeWorkFour/HomeWorkFour.iml" />
       <module fileurl="file://$PROJECT_DIR$/HomeWorkOne/HomeWorkOne.iml" filepath="$PROJECT_DIR$/HomeWorkOne/HomeWorkOne.iml" />
       <module fileurl="file://$PROJECT_DIR$/HomeWorkThree/HomeWorkThree.iml" filepath="$PROJECT_DIR$/HomeWorkThree/HomeWorkThree.iml" />
       <module fileurl="file://$PROJECT_DIR$/HomeWorkTwo/HomeWorkTwo.iml" filepath="$PROJECT_DIR$/HomeWorkTwo/HomeWorkTwo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/HomwWork4/HomwWork4.iml" filepath="$PROJECT_DIR$/HomwWork4/HomwWork4.iml" />
       <module fileurl="file://$PROJECT_DIR$/KTH-skola.iml" filepath="$PROJECT_DIR$/KTH-skola.iml" />
       <module fileurl="file://$PROJECT_DIR$/TestJSF/TestJSF.iml" filepath="$PROJECT_DIR$/TestJSF/TestJSF.iml" />
     </modules>

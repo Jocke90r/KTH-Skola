@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="KTH-skola:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/KTH_skola_war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="KTH-skola/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="KTH-skola" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
