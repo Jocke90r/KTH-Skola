@@ -9,8 +9,6 @@ import android.widget.TextView;
 import android.os.Handler;
 import android.os.Message;
 
-
-
 import com.example.joaki.androidapp.net.ServerConnection;
 
 public class MainActivity extends AppCompatActivity {
@@ -56,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     public void sendMessage(View view){
         EditText editText = (EditText) findViewById(R.id.editText);
         String message = editText.getText().toString();
+        //tar bort det som användaren skrivit in.
+        //Sen skickas det via SendMessageToServer
         editText.setText(null);
         new SendMessageToServer().execute(message);
     }
@@ -63,20 +63,22 @@ public class MainActivity extends AppCompatActivity {
     //en listener som hanterar det som skickas från servern.
     private class ConnectToServer extends AsyncTask<Void, Void, ServerConnection> {
 
-        @Override
-        protected ServerConnection doInBackground(Void...voids ) {
-            ServerConnection serverConnection = new ServerConnection();
-            serverConnection.connect();
-            serverConnection.createListener(handler);
-            return serverConnection;
-        }
+            @Override
+            protected ServerConnection doInBackground(Void...voids ) {
+                ServerConnection serverConnection = new ServerConnection();
+                serverConnection.connect();
+                serverConnection.createListener(handler);
+                return serverConnection;
+            }
 
+        //
         @Override
         protected void onPostExecute(ServerConnection serverConnection){
             MainActivity.this.serverConnection = serverConnection;
         }
     }
-    //tar emot en sträng och skickar denna till servern.
+    //en subklass som använder sig av AsyncTask
+    //tar emot en sträng och skickar denna till servern via serverConnection.
     private class SendMessageToServer extends AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... params) {

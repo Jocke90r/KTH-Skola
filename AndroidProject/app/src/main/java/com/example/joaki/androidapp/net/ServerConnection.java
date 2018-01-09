@@ -1,15 +1,5 @@
 package com.example.joaki.androidapp.net;
 
-/**
- * Created by Joakim on 2018-01-04.
- */
-
-    /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -49,16 +39,6 @@ public class ServerConnection implements Runnable {
         }
     }
 
-    //Borde kunna tas bort då klienten inte kan disca...
-    public void disconnect() {
-        try {
-            this.socket.close();
-            this.connected = false;
-            this.socket = null;
-        } catch (IOException ex) {
-            Logger.getLogger(ServerConnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
     //Skickar till servern
     public void send(String input) {
         try {
